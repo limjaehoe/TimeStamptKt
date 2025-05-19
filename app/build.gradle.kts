@@ -110,4 +110,7 @@ dependencies {
     // Paging 라이브러리
     implementation("androidx.paging:paging-runtime:3.2.1")
     implementation("androidx.paging:paging-compose:3.2.1")
+
+    // Navigation Compose
+    implementation("androidx.navigation:navigation-compose:2.7.5") // 최신 버전 사용
 }

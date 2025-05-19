@@ -1,4 +1,3 @@
-// data/TimeRecordDatabase.kt
 package com.androidkotlin.timestampkt.data.local.database
 
 import android.content.Context

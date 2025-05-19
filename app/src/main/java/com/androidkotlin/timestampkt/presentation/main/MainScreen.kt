@@ -20,6 +20,7 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
 import com.androidkotlin.timestampkt.data.preferences.SettingsManager
 import com.androidkotlin.timestampkt.domain.model.TimeRecord
+import com.androidkotlin.timestampkt.presentation.settings.SettingsScreen
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -458,3 +459,4 @@ fun TimeRecordItem(
         }
     }
 }
+
