@@ -1,4 +1,4 @@
-package com.androidkotlin.timestampkt.data
+package com.androidkotlin.timestampkt.domain.model
 
 
 import androidx.room.Entity

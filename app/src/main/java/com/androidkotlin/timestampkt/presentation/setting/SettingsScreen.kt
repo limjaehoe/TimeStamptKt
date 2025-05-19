@@ -1,4 +1,4 @@
-package com.androidkotlin.timestampkt
+package com.androidkotlin.timestampkt.presentation.settings
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
@@ -11,16 +11,15 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.androidkotlin.timestampkt.data.SettingsManager
-import com.androidkotlin.timestampkt.viewmodel.TimeRecordViewModel
+import com.androidkotlin.timestampkt.data.preferences.SettingsManager
+import com.androidkotlin.timestampkt.presentation.main.MainViewModel
 import kotlinx.coroutines.launch
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(
+    viewModel: MainViewModel,
     settingsManager: SettingsManager,
-    viewModel: TimeRecordViewModel,  // ViewModel 추가
     onBackClick: () -> Unit
 ) {
     val scope = rememberCoroutineScope()
@@ -36,7 +35,7 @@ fun SettingsScreen(
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
                         Icon(
-                            imageVector = androidx.compose.material.icons.Icons.Default.ArrowBack,
+                            imageVector = Icons.Default.ArrowBack,
                             contentDescription = "뒤로가기"
                         )
                     }

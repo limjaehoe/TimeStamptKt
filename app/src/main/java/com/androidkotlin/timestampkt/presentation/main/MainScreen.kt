@@ -1,132 +1,84 @@
-// MainActivity.kt
-package com.androidkotlin.timestampkt
+// presentation/main/MainScreen.kt
+package com.androidkotlin.timestampkt.presentation.main
 
-import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.paging.LoadState
-import com.androidkotlin.timestampkt.data.SettingsManager
-import com.androidkotlin.timestampkt.data.TimeRecord
-import com.androidkotlin.timestampkt.data.TimeRecordDatabase
-import com.androidkotlin.timestampkt.SettingsScreen
-import com.androidkotlin.timestampkt.ui.theme.TimeStampKtTheme
-import com.androidkotlin.timestampkt.viewmodel.TimeRecordViewModel
-import com.androidkotlin.timestampkt.viewmodel.TimeRecordViewModelFactory
+import androidx.paging.compose.collectAsLazyPagingItems
+import androidx.paging.compose.itemKey
+import com.androidkotlin.timestampkt.data.preferences.SettingsManager
+import com.androidkotlin.timestampkt.domain.model.TimeRecord
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
-import androidx.paging.compose.collectAsLazyPagingItems
-import androidx.paging.compose.itemKey
-
-
-
-class MainActivity : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContent {
-            TimeStampKtTheme {
-                TimeStampApp()
-            }
-        }
-    }
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TimeStampApp() {
-    val context = LocalContext.current
-    val database = remember { TimeRecordDatabase.getDatabase(context) }
-    val viewModel: TimeRecordViewModel = viewModel(
-        factory = TimeRecordViewModelFactory(database.timeRecordDao())
-    )
-    val settingsManager = remember { SettingsManager(context) }
-
+fun MainScreen(
+    viewModel: MainViewModel,
+    settingsManager: SettingsManager,
+    onNavigateToSettings: () -> Unit
+) {
     var showEditDialog by remember { mutableStateOf(false) }
     var showDeleteDialog by remember { mutableStateOf(false) }
     var currentRecord by remember { mutableStateOf<TimeRecord?>(null) }
     var noteText by remember { mutableStateOf("") }
-    var currentScreen by remember { mutableStateOf("main") }
 
-    // 앱 시작 시 자동 기록 추가 - 수정된 부분
+    // 앱 시작 시 자동 기록 추가
     val scope = rememberCoroutineScope()
     val autoRecordEnabled = settingsManager.autoRecordEnabled.collectAsState(initial = false)
 
-    // 앱 시작 시 한 번만 실행되며, 자동 기록 설정을 확인
+    // 앱 시작 시 한 번만 실행
     LaunchedEffect(key1 = Unit) {
-        // 설정 값을 먼저 가져옴
-        val isAutoEnabled = settingsManager.autoRecordEnabled.first() // 실제 저장된 값 가져오기
-
-        // 자동 기록이 활성화된 경우에만 기록 추가
+        val isAutoEnabled = settingsManager.autoRecordEnabled.first()
         if (isAutoEnabled) {
-            viewModel.addRecord(
-                TimeRecord(
-                    timestamp = System.currentTimeMillis(),
-                    note = "앱 시작 시 자동 기록"
-                )
-            )
+            viewModel.addRecord("앱 시작 시 자동 기록")
         }
     }
 
-    when (currentScreen) {
-        "main" -> {
-            Scaffold(
-                modifier = Modifier.fillMaxSize(),
-                topBar = {
-                    TopAppBar(
-                        title = { Text("회사 출근 기록") },
-                        actions = {
-                            IconButton(onClick = { currentScreen = "settings" }) {
-                                Icon(
-                                    imageVector = Icons.Default.Settings,
-                                    contentDescription = "설정"
-                                )
-                            }
-                        }
-                    )
-                }
-            ) { innerPadding ->
-                TimeStampScreen(
-                    modifier = Modifier.padding(innerPadding),
-                    viewModel = viewModel,
-                    onEditRecord = { record ->
-                        currentRecord = record
-                        noteText = record.note
-                        showEditDialog = true
-                    },
-                    onDeleteRecord = { record ->
-                        currentRecord = record
-                        showDeleteDialog = true
+    Scaffold(
+        modifier = Modifier.fillMaxSize(),
+        topBar = {
+            TopAppBar(
+                title = { Text("회사 출근 기록") },
+                actions = {
+                    IconButton(onClick = onNavigateToSettings) {
+                        Icon(
+                            imageVector = Icons.Default.Settings,
+                            contentDescription = "설정"
+                        )
                     }
-                )
-            }
-        }
-        "settings" -> {
-            SettingsScreen(
-                settingsManager = settingsManager,
-                viewModel = viewModel,  // ViewModel 전달
-                onBackClick = { currentScreen = "main" }
+                }
             )
         }
+    ) { innerPadding ->
+        TimeStampScreen(
+            modifier = Modifier.padding(innerPadding),
+            viewModel = viewModel,
+            onEditRecord = { record ->
+                currentRecord = record
+                noteText = record.note
+                showEditDialog = true
+            },
+            onDeleteRecord = { record ->
+                currentRecord = record
+                showDeleteDialog = true
+            }
+        )
     }
 
     // 수정 다이얼로그
@@ -198,15 +150,26 @@ fun TimeStampApp() {
 @Composable
 fun TimeStampScreen(
     modifier: Modifier = Modifier,
-    viewModel: TimeRecordViewModel,
+    viewModel: MainViewModel,
     onEditRecord: (TimeRecord) -> Unit,
     onDeleteRecord: (TimeRecord) -> Unit
 ) {
     var currentTime by remember { mutableStateOf(System.currentTimeMillis()) }
-    // 페이징된 데이터 수집
     val lazyPagingItems = viewModel.pagedRecords.collectAsLazyPagingItems()
-    // 기록 개수를 위한 전체 목록 수집 (또는 count 쿼리 사용)
     val allRecords by viewModel.allRecords.collectAsState(initial = emptyList())
+
+    // LazyListState 추가
+    val listState = rememberLazyListState()
+    val scope = rememberCoroutineScope()
+
+    // 데이터가 변경될 때 자동으로 맨 위로 스크롤
+    LaunchedEffect(lazyPagingItems.itemCount) {
+        if (lazyPagingItems.itemCount > 0) {
+            scope.launch {
+                listState.animateScrollToItem(0)
+            }
+        }
+    }
 
     // 1초마다 시간 업데이트
     LaunchedEffect(key1 = true) {
@@ -220,7 +183,7 @@ fun TimeStampScreen(
         modifier = modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // 현재 시간 표시 카드 (기존 코드 유지)
+        // 현재 시간 표시 카드
         Card(
             modifier = Modifier
                 .padding(16.dp)
@@ -273,11 +236,12 @@ fun TimeStampScreen(
         LazyColumn(
             modifier = Modifier
                 .fillMaxWidth()
-                .weight(1f)
+                .weight(1f),
+            state = listState
         ) {
             items(
                 count = lazyPagingItems.itemCount,
-                key = lazyPagingItems.itemKey { it.id }  // 고유 키 사용
+                key = lazyPagingItems.itemKey { it.id }
             ) { index ->
                 val record = lazyPagingItems[index]
                 if (record != null) {
@@ -287,7 +251,6 @@ fun TimeStampScreen(
                         onDeleteClick = { onDeleteRecord(record) }
                     )
                 } else {
-                    // 로딩 중인 항목의 플레이스홀더
                     LoadingTimeRecordItem()
                 }
             }
@@ -304,7 +267,7 @@ fun TimeStampScreen(
             }
         }
 
-        // 새 기록 추가 버튼 (기존 코드 유지)
+        // 새 기록 추가 버튼
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -313,12 +276,11 @@ fun TimeStampScreen(
         ) {
             Button(
                 onClick = {
-                    viewModel.addRecord(
-                        TimeRecord(
-                            timestamp = System.currentTimeMillis(),
-                            note = ""
-                        )
-                    )
+                    viewModel.addRecord("")
+                    scope.launch {
+                        delay(100)
+                        listState.animateScrollToItem(0)
+                    }
                 },
                 modifier = Modifier.fillMaxWidth()
             ) {
@@ -337,7 +299,7 @@ fun TimeStampScreen(
     }
 }
 
-// 로딩 중인 항목의 플레이스홀더
+// LoadingTimeRecordItem, LoadingIndicator, ErrorItem, TimeRecordItem 함수는 기존 코드 유지
 @Composable
 fun LoadingTimeRecordItem() {
     Card(
@@ -361,7 +323,6 @@ fun LoadingTimeRecordItem() {
     }
 }
 
-// 로딩 인디케이터
 @Composable
 fun LoadingIndicator() {
     Box(
@@ -377,7 +338,6 @@ fun LoadingIndicator() {
     }
 }
 
-// 에러 표시 항목
 @Composable
 fun ErrorItem(onRetry: () -> Unit) {
     Card(

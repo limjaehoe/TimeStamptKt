@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <application
+        android:name="com.androidkotlin.timestampkt.TimeStampKtApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -13,7 +14,7 @@
         android:theme="@style/Theme.TimeStampKt"
         tools:targetApi="31">
         <activity
-            android:name="com.androidkotlin.timestampkt.MainActivity"
+            android:name="com.androidkotlin.timestampkt.presentation.main.MainActivity"
             android:exported="true"
             android:label="@string/app_name"
             android:theme="@style/Theme.TimeStampKt">

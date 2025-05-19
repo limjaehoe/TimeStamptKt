@@ -1,10 +1,12 @@
 // data/TimeRecordDatabase.kt
-package com.androidkotlin.timestampkt.data
+package com.androidkotlin.timestampkt.data.local.database
 
 import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import com.androidkotlin.timestampkt.data.local.dao.TimeRecordDao
+import com.androidkotlin.timestampkt.domain.model.TimeRecord
 
 @Database(entities = [TimeRecord::class], version = 1, exportSchema = false)
 abstract class TimeRecordDatabase : RoomDatabase() {

@@ -1,7 +1,8 @@
-package com.androidkotlin.timestampkt.data
+package com.androidkotlin.timestampkt.data.local.dao
 
 import androidx.paging.PagingSource
 import androidx.room.*
+import com.androidkotlin.timestampkt.domain.model.TimeRecord
 import kotlinx.coroutines.flow.Flow
 
 @Dao
