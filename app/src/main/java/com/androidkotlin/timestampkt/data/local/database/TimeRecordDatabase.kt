@@ -8,7 +8,7 @@ import com.androidkotlin.timestampkt.data.local.dao.TimeRecordDao
 import com.androidkotlin.timestampkt.data.local.entity.TimeRecordEntity
 import com.androidkotlin.timestampkt.domain.model.TimeRecord
 
-@Database(entities = [TimeRecordEntity::class], version = 2, exportSchema = false)
+@Database(entities = [TimeRecordEntity::class], version = 1, exportSchema = false)
 abstract class TimeRecordDatabase : RoomDatabase() {
 
     abstract fun timeRecordDao(): TimeRecordDao
