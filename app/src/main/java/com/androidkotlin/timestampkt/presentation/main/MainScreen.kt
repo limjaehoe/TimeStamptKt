@@ -43,11 +43,11 @@ fun MainScreen(
     val scope = rememberCoroutineScope()
     val autoRecordEnabled = settingsManager.autoRecordEnabled.collectAsState(initial = false)
 
-    // 앱 시작 시 한 번만 실행
+    // 앱 시작 시 하루에 한 번만 자동 기록 추가
     LaunchedEffect(key1 = Unit) {
-        val isAutoEnabled = settingsManager.autoRecordEnabled.first()
-        if (isAutoEnabled) {
+        if (settingsManager.shouldAddAutoRecord()) {
             viewModel.addRecord("앱 시작 시 자동 기록")
+            settingsManager.updateLastAutoRecordDate()
         }
     }
 
