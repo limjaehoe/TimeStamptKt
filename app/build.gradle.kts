@@ -7,11 +7,11 @@ plugins {
 }
 
 android {
-    namespace = "com.androidkotlin.timestampkt.data"
+    namespace = "com.androidkotlin.timestampkt"
     compileSdk = libs.versions.compileSdk.get().toInt()
 
     defaultConfig {
-        applicationId = "com.androidkotlin.timestampkt.data"
+        applicationId = "com.androidkotlin.timestampkt"
         minSdk = libs.versions.minSdk.get().toInt()
         targetSdk = libs.versions.targetSdk.get().toInt()
         versionCode = 1
