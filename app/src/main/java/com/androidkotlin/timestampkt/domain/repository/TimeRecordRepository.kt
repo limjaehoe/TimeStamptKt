@@ -11,5 +11,6 @@ interface TimeRecordRepository {
     suspend fun updateRecord(record: TimeRecord)
     suspend fun deleteRecord(record: TimeRecord)
     suspend fun deleteAllRecords()
+    suspend fun replaceAllRecords(records: List<TimeRecord>)
     suspend fun getRecordCount(): Int
 }

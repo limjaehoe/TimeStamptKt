@@ -52,6 +52,10 @@ class TimeRecordRepositoryImpl @Inject constructor(
         timeRecordDao.deleteAll()
     }
 
+    override suspend fun replaceAllRecords(records: List<TimeRecord>) {
+        timeRecordDao.replaceAll(records.map { TimeRecordEntity.fromDomainModel(it) })
+    }
+
     override suspend fun getRecordCount(): Int {
         return timeRecordDao.getCount()
     }

@@ -13,8 +13,11 @@ interface TimeRecordDao {
     @Query("SELECT * FROM time_records ORDER BY timestamp DESC")
     fun getPagedRecords(): PagingSource<Int, TimeRecordEntity>
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(record: TimeRecordEntity)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAll(records: List<TimeRecordEntity>)
 
     @Update
     suspend fun update(record: TimeRecordEntity)
@@ -24,6 +27,12 @@ interface TimeRecordDao {
 
     @Query("DELETE FROM time_records")
     suspend fun deleteAll()
+
+    @Transaction
+    suspend fun replaceAll(records: List<TimeRecordEntity>) {
+        deleteAll()
+        insertAll(records)
+    }
 
     @Query("SELECT COUNT(*) FROM time_records")
     suspend fun getCount(): Int
