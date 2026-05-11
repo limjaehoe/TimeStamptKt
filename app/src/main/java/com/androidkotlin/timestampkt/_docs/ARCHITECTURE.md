@@ -19,14 +19,13 @@ TimeStamptKt는 출근/업무 시간 기록을 빠르게 남기고 관리하기 
 - 전체 기록 삭제
 - JSON 백업 파일 저장
 - JSON 백업 파일 불러오기
+- 연차/휴가 기록 추가, 수정, 삭제
+- 연도별 지급/사용/잔여 연차 계산
+- 엑셀 형식 연차 기록 붙여넣기 가져오기
+- 캘린더에서 출근 기록과 연차 기록 표시
 - 앱 시작 시 하루 1회 자동 기록 옵션
 - 하단 내비게이션 기본 구조
 - 설정 화면
-
-### 화면만 준비됨
-
-- 캘린더 화면
-- 연차/휴가 관리 화면
 
 ### 정리 필요
 
@@ -68,6 +67,15 @@ TimeStamptKt는 출근/업무 시간 기록을 빠르게 남기고 관리하기 
   - 자동 기록 설정
   - 백업 파일 저장/불러오기
   - 전체 데이터 삭제
+- `presentation/leave`
+  - 연차 요약
+  - 연차 기록 목록
+  - 연차 기록 추가/수정/삭제
+  - 엑셀 기록 붙여넣기 가져오기
+- `presentation/calendar`
+  - 월별 달력
+  - 출근 기록 표시
+  - 연차 기록 표시
 
 앞으로 추가할 후보:
 
@@ -91,6 +99,8 @@ TimeStamptKt는 출근/업무 시간 기록을 빠르게 남기고 관리하기 
 - 연차 사용/잔여 계산 UseCase
 - CSV/Excel 내보내기 UseCase
 - JSON 백업/복원 UseCase
+- 연차 기록 모델
+- 연도별 지급 연차 모델
 
 ### Data Layer
 
@@ -111,6 +121,13 @@ TimeStamptKt는 출근/업무 시간 기록을 빠르게 남기고 관리하기 
 - 검색 쿼리
 - 백업/복원 데이터 소스
 - 연차/휴가 Entity와 DAO
+
+현재 추가된 연차 관련 저장소:
+
+- `LeaveRecordEntity`
+- `LeaveYearSettingEntity`
+- `LeaveDao`
+- `LeaveRepository`
 
 ### DI Layer
 
@@ -153,6 +170,8 @@ Hilt를 통해 의존성을 제공합니다.
 3. `MainViewModel.restoreBackup()` 호출
 4. `ImportTimeRecordsBackupUseCase`가 JSON을 파싱
 5. 기존 출근 기록을 백업 파일 내용으로 교체
+
+백업 파일에는 출근 기록뿐 아니라 연차 기록과 연도별 지급 연차 설정도 함께 포함됩니다.
 
 ## 기술 스택
 

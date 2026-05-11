@@ -7,16 +7,18 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import com.androidkotlin.timestampkt.presentation.settings.SettingsScreen
 import com.androidkotlin.timestampkt.ui.theme.TimeStampKtTheme
 import dagger.hilt.android.AndroidEntryPoint
 import com.androidkotlin.timestampkt.data.preferences.SettingsManager
+import com.androidkotlin.timestampkt.presentation.leave.LeaveViewModel
 import com.androidkotlin.timestampkt.presentation.navigation.TimeStampNavigation
+import com.androidkotlin.timestampkt.presentation.settings.SettingsScreen
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     private val viewModel: MainViewModel by viewModels()
+    private val leaveViewModel: LeaveViewModel by viewModels()
 
     @Inject
     lateinit var settingsManager: SettingsManager
@@ -29,7 +31,7 @@ class MainActivity : ComponentActivity() {
                 //TimeStampApp(viewModel, settingsManager)
 
                 // 기존 TimeStampApp 대신 TimeStampNavigation 사용
-                TimeStampNavigation(viewModel, settingsManager)
+                TimeStampNavigation(viewModel, leaveViewModel, settingsManager)
 
             }
         }

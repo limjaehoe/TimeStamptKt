@@ -12,16 +12,20 @@ com.androidkotlin.timestampkt/
 ├── data/                           # 데이터 레이어
 │   ├── local/                      # Room 로컬 DB
 │   │   ├── dao/
+│   │   │   ├── LeaveDao.kt         # 연차 기록/연도별 지급 연차 DAO
 │   │   │   └── TimeRecordDao.kt    # 기록 조회/추가/수정/삭제 DAO
 │   │   ├── database/
 │   │   │   └── TimeRecordDatabase.kt
 │   │   └── entity/
+│   │       ├── LeaveRecordEntity.kt
+│   │       ├── LeaveYearSettingEntity.kt
 │   │       └── TimeRecordEntity.kt
 │   │
 │   ├── preferences/
 │   │   └── SettingsManager.kt      # DataStore 기반 설정 관리
 │   │
 │   └── repository/
+│       ├── LeaveRepositoryImpl.kt
 │       └── TimeRecordRepositoryImpl.kt
 │
 ├── di/                             # 의존성 주입
@@ -30,9 +34,12 @@ com.androidkotlin.timestampkt/
 │
 ├── domain/                         # 도메인 레이어
 │   ├── model/
+│   │   ├── LeaveRecord.kt
+│   │   ├── LeaveYearSetting.kt
 │   │   └── TimeRecord.kt
 │   │
 │   ├── repository/
+│   │   ├── LeaveRepository.kt
 │   │   └── TimeRecordRepository.kt
 │   │
 │   └── usecase/
@@ -50,6 +57,13 @@ com.androidkotlin.timestampkt/
 │   │   ├── MainActivity.kt
 │   │   ├── MainScreen.kt
 │   │   └── MainViewModel.kt
+│   │
+│   ├── calendar/
+│   │   └── CalendarScreen.kt
+│   │
+│   ├── leave/
+│   │   ├── LeaveScreen.kt
+│   │   └── LeaveViewModel.kt
 │   │
 │   ├── navigation/
 │   │   └── TimeStampNavigation.kt

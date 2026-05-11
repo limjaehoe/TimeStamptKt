@@ -17,6 +17,9 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.androidkotlin.timestampkt.data.preferences.SettingsManager
+import com.androidkotlin.timestampkt.presentation.calendar.CalendarScreen
+import com.androidkotlin.timestampkt.presentation.leave.LeaveScreen
+import com.androidkotlin.timestampkt.presentation.leave.LeaveViewModel
 import com.androidkotlin.timestampkt.presentation.main.MainScreen
 import com.androidkotlin.timestampkt.presentation.main.MainViewModel
 import com.androidkotlin.timestampkt.presentation.settings.SettingsScreen
@@ -40,6 +43,7 @@ val items = listOf(
 @Composable
 fun TimeStampNavigation(
     viewModel: MainViewModel,
+    leaveViewModel: LeaveViewModel,
     settingsManager: SettingsManager
 ) {
     val navController = rememberNavController()
@@ -86,12 +90,13 @@ fun TimeStampNavigation(
                 )
             }
             composable(Screen.Calendar.route) {
-                // 캘린더 화면 (임시 텍스트)
-                Text("캘린더 화면 - 개발 예정")
+                CalendarScreen(
+                    mainViewModel = viewModel,
+                    leaveViewModel = leaveViewModel
+                )
             }
             composable(Screen.Leave.route) {
-                // 연차 관리 화면 (임시 텍스트)
-                Text("연차 관리 화면 - 개발 예정")
+                LeaveScreen(viewModel = leaveViewModel)
             }
             composable(Screen.Settings.route) {
                 SettingsScreen(
