@@ -1,6 +1,7 @@
 package com.androidkotlin.timestampkt.data.preferences
 
 import android.content.Context
+import android.content.Context.MODE_PRIVATE
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
@@ -19,6 +20,8 @@ private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(na
 
 
 class SettingsManager(private val context: Context) {
+
+    private val sharedPreferences = context.getSharedPreferences("app_settings", MODE_PRIVATE)
 
     // 자동 기록 설정의 키 정의
     private val AUTO_RECORD_KEY = booleanPreferencesKey("auto_record_enabled")
@@ -63,5 +66,19 @@ class SettingsManager(private val context: Context) {
         context.dataStore.edit { preferences ->
             preferences[LAST_AUTO_RECORD_DATE_KEY] = today
         }
+    }
+
+    fun isDarkModeEnabled(): Boolean {
+        return sharedPreferences.getBoolean(DARK_MODE_ENABLED_KEY, false)
+    }
+
+    fun setDarkModeEnabled(enabled: Boolean) {
+        sharedPreferences.edit()
+            .putBoolean(DARK_MODE_ENABLED_KEY, enabled)
+            .apply()
+    }
+
+    companion object {
+        private const val DARK_MODE_ENABLED_KEY = "dark_mode_enabled"
     }
 }

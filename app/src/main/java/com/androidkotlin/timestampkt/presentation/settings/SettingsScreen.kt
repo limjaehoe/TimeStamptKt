@@ -33,7 +33,9 @@ import java.util.Locale
 fun SettingsScreen(
     viewModel: MainViewModel,
     settingsManager: SettingsManager,
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
+    darkModeEnabled: Boolean,
+    onDarkModeChange: (Boolean) -> Unit
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
@@ -103,6 +105,7 @@ fun SettingsScreen(
     Scaffold(
         topBar = {
             TopAppBar(
+                windowInsets = WindowInsets(0.dp),
                 title = { Text("설정") },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
@@ -123,6 +126,48 @@ fun SettingsScreen(
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
+            Card(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Column(
+                    modifier = Modifier.padding(16.dp)
+                ) {
+                    Text(
+                        text = "화면 모드",
+                        style = MaterialTheme.typography.titleMedium
+                    )
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        FilterChip(
+                            selected = !darkModeEnabled,
+                            onClick = { onDarkModeChange(false) },
+                            label = { Text("일반 모드") },
+                            modifier = Modifier.weight(1f)
+                        )
+
+                        FilterChip(
+                            selected = darkModeEnabled,
+                            onClick = { onDarkModeChange(true) },
+                            label = { Text("다크 모드") },
+                            modifier = Modifier.weight(1f)
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    Text(
+                        text = "기본값은 일반 모드입니다.",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            }
+
             // 앱 기본 설정 카드
             Card(
                 modifier = Modifier.fillMaxWidth()

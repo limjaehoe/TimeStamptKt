@@ -29,6 +29,7 @@ TimeStamptKt는 출근/업무 시간 기록을 빠르게 남기고 관리하기 
 - 앱 시작 시 하루 1회 자동 기록 옵션
 - 하단 내비게이션 기본 구조
 - 설정 화면
+- 일반/다크 화면 모드 선택
 
 ### 정리 필요
 
@@ -67,6 +68,7 @@ TimeStamptKt는 출근/업무 시간 기록을 빠르게 남기고 관리하기 
 - `presentation/navigation`
   - 하단 탭 내비게이션
 - `presentation/settings`
+  - 일반/다크 화면 모드 설정
   - 자동 기록 설정
   - 백업 파일 저장/불러오기
   - 전체 데이터 삭제
@@ -188,6 +190,7 @@ Hilt를 통해 의존성을 제공합니다.
 - Room
 - Paging 3
 - DataStore Preferences
+- SharedPreferences (화면 모드 설정)
 
 ## 다음 개발 기준
 

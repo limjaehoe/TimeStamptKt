@@ -53,8 +53,10 @@ fun MainScreen(
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
+        contentWindowInsets = WindowInsets(0.dp),
         topBar = {
             TopAppBar(
+                windowInsets = WindowInsets(0.dp),
                 title = { Text("회사 출근 기록") },
                 actions = {
                     IconButton(onClick = onNavigateToSettings) {

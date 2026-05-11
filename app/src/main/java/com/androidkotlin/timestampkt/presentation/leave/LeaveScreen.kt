@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -29,10 +30,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -58,7 +57,6 @@ import java.util.Locale
 
 private val amountPresets = listOf(1.0, 2.0, 3.0, 1.5, 0.5, 0.25)
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LeaveScreen(
     viewModel: LeaveViewModel
@@ -76,76 +74,69 @@ fun LeaveScreen(
         }
     }
 
-    Scaffold(
-        topBar = {
-            TopAppBar(title = { Text("연차 관리") })
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        item {
+            LeaveSummaryCard(
+                uiState = uiState,
+                onPreviousYear = { viewModel.setSelectedYear(uiState.selectedYear - 1) },
+                onNextYear = { viewModel.setSelectedYear(uiState.selectedYear + 1) },
+                onSaveTotalDays = viewModel::saveTotalDays
+            )
         }
-    ) { innerPadding ->
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            item {
-                LeaveSummaryCard(
-                    uiState = uiState,
-                    onPreviousYear = { viewModel.setSelectedYear(uiState.selectedYear - 1) },
-                    onNextYear = { viewModel.setSelectedYear(uiState.selectedYear + 1) },
-                    onSaveTotalDays = viewModel::saveTotalDays
-                )
-            }
 
-            item {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+        item {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Button(
+                    onClick = {
+                        editingRecord = null
+                        showRecordDialog = true
+                    },
+                    modifier = Modifier.weight(1f)
                 ) {
-                    Button(
-                        onClick = {
-                            editingRecord = null
-                            showRecordDialog = true
-                        },
-                        modifier = Modifier.weight(1f)
-                    ) {
-                        Icon(Icons.Default.Add, contentDescription = null)
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text("연차 추가")
-                    }
+                    Icon(Icons.Default.Add, contentDescription = null)
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("연차 추가")
+                }
 
-                    OutlinedButton(
-                        onClick = { showImportDialog = true },
-                        modifier = Modifier.weight(1f)
-                    ) {
-                        Icon(Icons.Default.ContentPaste, contentDescription = null)
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text("붙여넣기")
-                    }
+                OutlinedButton(
+                    onClick = { showImportDialog = true },
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Icon(Icons.Default.ContentPaste, contentDescription = null)
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("붙여넣기")
                 }
             }
+        }
 
-            if (uiState.records.isEmpty()) {
-                item {
-                    Card(modifier = Modifier.fillMaxWidth()) {
-                        Text(
-                            text = "등록된 연차 기록이 없습니다.",
-                            modifier = Modifier.padding(20.dp),
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
-                }
-            } else {
-                items(uiState.records, key = { it.id }) { record ->
-                    LeaveRecordItem(
-                        record = record,
-                        onEdit = {
-                            editingRecord = record
-                            showRecordDialog = true
-                        },
-                        onDelete = { viewModel.deleteLeaveRecord(record) }
+        if (uiState.records.isEmpty()) {
+            item {
+                Card(modifier = Modifier.fillMaxWidth()) {
+                    Text(
+                        text = "등록된 연차 기록이 없습니다.",
+                        modifier = Modifier.padding(20.dp),
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
+            }
+        } else {
+            items(uiState.records, key = { it.id }) { record ->
+                LeaveRecordItem(
+                    record = record,
+                    onEdit = {
+                        editingRecord = record
+                        showRecordDialog = true
+                    },
+                    onDelete = { viewModel.deleteLeaveRecord(record) }
+                )
             }
         }
     }

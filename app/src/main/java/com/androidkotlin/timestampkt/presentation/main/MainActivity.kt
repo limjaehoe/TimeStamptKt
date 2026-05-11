@@ -1,7 +1,9 @@
 package com.androidkotlin.timestampkt.presentation.main
 
+import android.graphics.Color
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
@@ -25,13 +27,43 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         setContent {
-            TimeStampKtTheme {
+            var darkModeEnabled by remember {
+                mutableStateOf(settingsManager.isDarkModeEnabled())
+            }
+
+            SideEffect {
+                enableEdgeToEdge(
+                    statusBarStyle = if (darkModeEnabled) {
+                        SystemBarStyle.dark(Color.TRANSPARENT)
+                    } else {
+                        SystemBarStyle.light(Color.TRANSPARENT, Color.TRANSPARENT)
+                    },
+                    navigationBarStyle = if (darkModeEnabled) {
+                        SystemBarStyle.dark(Color.TRANSPARENT)
+                    } else {
+                        SystemBarStyle.light(Color.TRANSPARENT, Color.TRANSPARENT)
+                    }
+                )
+            }
+
+            TimeStampKtTheme(
+                darkTheme = darkModeEnabled,
+                dynamicColor = false
+            ) {
                 //TimeStampApp(viewModel, settingsManager)
 
                 // 기존 TimeStampApp 대신 TimeStampNavigation 사용
-                TimeStampNavigation(viewModel, leaveViewModel, settingsManager)
+                TimeStampNavigation(
+                    viewModel = viewModel,
+                    leaveViewModel = leaveViewModel,
+                    settingsManager = settingsManager,
+                    darkModeEnabled = darkModeEnabled,
+                    onDarkModeChange = { enabled ->
+                        settingsManager.setDarkModeEnabled(enabled)
+                        darkModeEnabled = enabled
+                    }
+                )
 
             }
         }
@@ -112,7 +144,9 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun TimeStampApp(
     viewModel: MainViewModel,
-    settingsManager: SettingsManager
+    settingsManager: SettingsManager,
+    darkModeEnabled: Boolean = false,
+    onDarkModeChange: (Boolean) -> Unit = {}
 ) {
     var currentScreen by remember { mutableStateOf("main") }
 
@@ -128,7 +162,9 @@ fun TimeStampApp(
             SettingsScreen(
                 viewModel = viewModel,
                 settingsManager = settingsManager,
-                onBackClick = { currentScreen = "main" }
+                onBackClick = { currentScreen = "main" },
+                darkModeEnabled = darkModeEnabled,
+                onDarkModeChange = onDarkModeChange
             )
         }
     }

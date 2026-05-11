@@ -44,7 +44,9 @@ val items = listOf(
 fun TimeStampNavigation(
     viewModel: MainViewModel,
     leaveViewModel: LeaveViewModel,
-    settingsManager: SettingsManager
+    settingsManager: SettingsManager,
+    darkModeEnabled: Boolean,
+    onDarkModeChange: (Boolean) -> Unit
 ) {
     val navController = rememberNavController()
 
@@ -103,7 +105,9 @@ fun TimeStampNavigation(
                     viewModel = viewModel,
                     settingsManager = settingsManager,
                     // 뒤로가기 버튼 동작 변경
-                    onBackClick = { navController.navigateUp() }
+                    onBackClick = { navController.navigateUp() },
+                    darkModeEnabled = darkModeEnabled,
+                    onDarkModeChange = onDarkModeChange
                 )
             }
         }

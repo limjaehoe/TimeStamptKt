@@ -6,7 +6,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -22,9 +22,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -49,7 +47,6 @@ import java.util.Locale
 private val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.KOREA)
 private val timeFormat = SimpleDateFormat("HH:mm:ss", Locale.KOREA)
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CalendarScreen(
     mainViewModel: MainViewModel,
@@ -70,45 +67,38 @@ fun CalendarScreen(
         leaveRecords.groupBy { it.date }
     }
 
-    Scaffold(
-        topBar = {
-            TopAppBar(title = { Text("캘린더") })
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 16.dp, vertical = 8.dp),
+        verticalArrangement = Arrangement.spacedBy(10.dp)
+    ) {
+        item {
+            CalendarMonthCard(
+                visibleMonth = visibleMonth,
+                selectedDate = selectedDate,
+                timeRecordsByDate = timeRecordsByDate,
+                leaveRecordsByDate = leaveRecordsByDate,
+                onPreviousMonth = {
+                    visibleMonth = (visibleMonth.clone() as Calendar).apply {
+                        add(Calendar.MONTH, -1)
+                    }
+                },
+                onNextMonth = {
+                    visibleMonth = (visibleMonth.clone() as Calendar).apply {
+                        add(Calendar.MONTH, 1)
+                    }
+                },
+                onSelectDate = { selectedDate = it }
+            )
         }
-    ) { innerPadding ->
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            item {
-                CalendarMonthCard(
-                    visibleMonth = visibleMonth,
-                    selectedDate = selectedDate,
-                    timeRecordsByDate = timeRecordsByDate,
-                    leaveRecordsByDate = leaveRecordsByDate,
-                    onPreviousMonth = {
-                        visibleMonth = (visibleMonth.clone() as Calendar).apply {
-                            add(Calendar.MONTH, -1)
-                        }
-                    },
-                    onNextMonth = {
-                        visibleMonth = (visibleMonth.clone() as Calendar).apply {
-                            add(Calendar.MONTH, 1)
-                        }
-                    },
-                    onSelectDate = { selectedDate = it }
-                )
-            }
 
-            item {
-                SelectedDateCard(
-                    selectedDate = selectedDate,
-                    timeRecords = timeRecordsByDate[selectedDate].orEmpty(),
-                    leaveRecords = leaveRecordsByDate[selectedDate].orEmpty()
-                )
-            }
+        item {
+            SelectedDateCard(
+                selectedDate = selectedDate,
+                timeRecords = timeRecordsByDate[selectedDate].orEmpty(),
+                leaveRecords = leaveRecordsByDate[selectedDate].orEmpty()
+            )
         }
     }
 }
@@ -130,8 +120,8 @@ private fun CalendarMonthCard(
 
     Card(modifier = Modifier.fillMaxWidth()) {
         Column(
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+            modifier = Modifier.padding(12.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -171,8 +161,8 @@ private fun CalendarMonthCard(
             days.chunked(7).forEach { week ->
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(4.dp)
-                ) {
+                horizontalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
                     week.forEach { day ->
                         CalendarDayCell(
                             day = day,
@@ -204,6 +194,11 @@ private fun CalendarDayCell(
     modifier: Modifier = Modifier
 ) {
     val isSelected = day?.date == selectedDate
+    if (day == null) {
+        Box(modifier = modifier.height(46.dp))
+        return
+    }
+
     val background = if (isSelected) {
         MaterialTheme.colorScheme.primaryContainer
     } else {
@@ -211,23 +206,22 @@ private fun CalendarDayCell(
     }
 
     Card(
-        onClick = { day?.let { onSelectDate(it.date) } },
-        modifier = modifier.aspectRatio(1f),
-        enabled = day != null
+        onClick = { onSelectDate(day.date) },
+        modifier = modifier.height(46.dp)
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .background(background)
-                .padding(4.dp),
+                .padding(2.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
             Text(
-                text = day?.dayOfMonth?.toString().orEmpty(),
+                text = day.dayOfMonth.toString(),
                 fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
             )
-            Spacer(modifier = Modifier.height(4.dp))
+            Spacer(modifier = Modifier.height(2.dp))
             Row(horizontalArrangement = Arrangement.spacedBy(3.dp)) {
                 if (hasTimeRecord) Dot(MaterialTheme.colorScheme.primary)
                 if (hasLeaveRecord) Dot(MaterialTheme.colorScheme.tertiary)
