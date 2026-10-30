@@ -16,6 +16,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ChevronLeft
+import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.ContentPaste
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
@@ -201,16 +203,22 @@ private fun LeaveSummaryCard(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                TextButton(onClick = onPreviousYear) {
-                    Text("이전")
+                IconButton(onClick = onPreviousYear) {
+                    Icon(
+                        imageVector = Icons.Default.ChevronLeft,
+                        contentDescription = "이전 연도"
+                    )
                 }
                 Text(
                     text = "${uiState.selectedYear}년 연차",
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold
                 )
-                TextButton(onClick = onNextYear) {
-                    Text("다음")
+                IconButton(onClick = onNextYear) {
+                    Icon(
+                        imageVector = Icons.Default.ChevronRight,
+                        contentDescription = "다음 연도"
+                    )
                 }
             }
 
