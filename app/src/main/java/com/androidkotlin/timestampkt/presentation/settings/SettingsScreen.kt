@@ -39,7 +39,7 @@ fun SettingsScreen(
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
-    val autoRecordEnabled = settingsManager.autoRecordEnabled.collectAsState(initial = false)
+    val autoRecordEnabled = settingsManager.autoRecordEnabled.collectAsState(initial = true)
     val backupMessage by viewModel.backupMessage.collectAsState()
     var pendingBackupJson by remember { mutableStateOf<String?>(null) }
 

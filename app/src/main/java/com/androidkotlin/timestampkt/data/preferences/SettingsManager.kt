@@ -31,13 +31,12 @@ class SettingsManager(private val context: Context) {
     // 자동 기록 활성화 여부를 Flow로 제공
     val autoRecordEnabled: Flow<Boolean> = context.dataStore.data
         .map { preferences ->
-            // 기본값은 false로 변경 (기본적으로는 자동 기록 비활성화)
-            preferences[AUTO_RECORD_KEY] ?: false
+            preferences[AUTO_RECORD_KEY] ?: true
         }
 
     // 현재 설정값을 직접 가져오는 일회성 함수 추가
     suspend fun getAutoRecordEnabled(): Boolean {
-        return context.dataStore.data.first()[AUTO_RECORD_KEY] ?: false
+        return context.dataStore.data.first()[AUTO_RECORD_KEY] ?: true
     }
 
     // 자동 기록 설정 변경 함수
@@ -50,7 +49,7 @@ class SettingsManager(private val context: Context) {
     // 오늘 이미 자동 기록했는지 확인하는 함수
     suspend fun shouldAddAutoRecord(): Boolean {
         val preferences = context.dataStore.data.first()
-        val isAutoEnabled = preferences[AUTO_RECORD_KEY] ?: false
+        val isAutoEnabled = preferences[AUTO_RECORD_KEY] ?: true
 
         if (!isAutoEnabled) return false
 
