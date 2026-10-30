@@ -45,6 +45,8 @@ class MainViewModel @Inject constructor(
         }
     }
 
+    suspend fun addAutomaticRecord(): String = addTimeRecordUseCase("앱 시작 시 자동 기록")
+
     fun updateRecord(record: TimeRecord) {
         viewModelScope.launch {
             updateTimeRecordUseCase(record)

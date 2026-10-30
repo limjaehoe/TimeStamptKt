@@ -8,12 +8,13 @@ import javax.inject.Inject
 class AddTimeRecordUseCase @Inject constructor(
     private val repository: TimeRecordRepository
 ) {
-    suspend operator fun invoke(note: String = "") {
+    suspend operator fun invoke(note: String = ""): String {
         val record = TimeRecord(
             id = UUID.randomUUID().toString(),
             timestamp = System.currentTimeMillis(),
             note = note
         )
         repository.addRecord(record)
+        return record.id
     }
 }

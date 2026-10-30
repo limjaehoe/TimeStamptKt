@@ -41,13 +41,14 @@ fun MainScreen(
 
     // 앱 시작 시 자동 기록 추가
     val scope = rememberCoroutineScope()
-    val autoRecordEnabled = settingsManager.autoRecordEnabled.collectAsState(initial = false)
+    var automaticRecordId by remember { mutableStateOf<String?>(null) }
 
     // 앱 시작 시 하루에 한 번만 자동 기록 추가
     LaunchedEffect(key1 = Unit) {
         if (settingsManager.shouldAddAutoRecord()) {
-            viewModel.addRecord("앱 시작 시 자동 기록")
+            val recordId = viewModel.addAutomaticRecord()
             settingsManager.updateLastAutoRecordDate()
+            automaticRecordId = recordId
         }
     }
 
@@ -72,6 +73,8 @@ fun MainScreen(
         TimeStampScreen(
             modifier = Modifier.padding(innerPadding),
             viewModel = viewModel,
+            automaticRecordId = automaticRecordId,
+            onAutomaticRecordShown = { automaticRecordId = null },
             onEditRecord = { record ->
                 currentRecord = record
                 noteText = record.note
@@ -154,6 +157,8 @@ fun MainScreen(
 fun TimeStampScreen(
     modifier: Modifier = Modifier,
     viewModel: MainViewModel,
+    automaticRecordId: String?,
+    onAutomaticRecordShown: () -> Unit,
     onEditRecord: (TimeRecord) -> Unit,
     onDeleteRecord: (TimeRecord) -> Unit
 ) {
@@ -165,13 +170,16 @@ fun TimeStampScreen(
     val listState = rememberLazyListState()
     val scope = rememberCoroutineScope()
 
-    // 데이터가 변경될 때 자동으로 맨 위로 스크롤
-    LaunchedEffect(lazyPagingItems.itemCount) {
-        if (lazyPagingItems.itemCount > 0) {
-            scope.launch {
-                listState.animateScrollToItem(0)
-            }
-        }
+    LaunchedEffect(automaticRecordId) {
+        val recordId = automaticRecordId ?: return@LaunchedEffect
+        listState.scrollToItem(0)
+        val index = snapshotFlow {
+            val snapshot = lazyPagingItems.itemSnapshotList
+            val loadedIndex = snapshot.items.indexOfFirst { it.id == recordId }
+            if (loadedIndex >= 0) snapshot.placeholdersBefore + loadedIndex else -1
+        }.first { it >= 0 }
+        listState.scrollToItem(index)
+        onAutomaticRecordShown()
     }
 
     // 1초마다 시간 업데이트
