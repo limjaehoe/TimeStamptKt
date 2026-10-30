@@ -91,7 +91,7 @@ fun MainScreen(
     if (showEditDialog && currentRecord != null) {
         AlertDialog(
             onDismissRequest = { showEditDialog = false },
-            title = { Text("기록 수정") },
+            title = { Text("메모 수정") },
             text = {
                 OutlinedTextField(
                     value = noteText,
@@ -437,7 +437,7 @@ fun TimeRecordItem(
                         onDismissRequest = { expanded = false }
                     ) {
                         DropdownMenuItem(
-                            text = { Text("수정") },
+                            text = { Text("메모 수정") },
                             onClick = {
                                 onEditClick()
                                 expanded = false
@@ -451,7 +451,7 @@ fun TimeRecordItem(
                         )
 
                         DropdownMenuItem(
-                            text = { Text("삭제") },
+                            text = { Text("기록 삭제") },
                             onClick = {
                                 onDeleteClick()
                                 expanded = false
